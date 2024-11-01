@@ -1157,28 +1157,29 @@
 
 //     CODE 7 STARTS!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-
 // server.js
 
-const express = require('express');
-const axios = require('axios');
-const bodyParser = require('body-parser');
-const querystring = require('querystring');
-const session = require('express-session');
-require('dotenv').config();
+// Import required modules
+const express = require('express');           // Web server framework
+const axios = require('axios');               // HTTP client for making requests
+const bodyParser = require('body-parser');    // Middleware to parse request bodies
+const querystring = require('querystring');   // Helper to format URL query strings
+const session = require('express-session');   // Session management
+require('dotenv').config();                   // Load environment variables
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;        // Port from environment or defaults to 3000
 
+// Middleware to parse JSON and URL-encoded data
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Initialize session
+// Initialize session management
 app.use(session({
-    secret: 'abcdef', // Replace with a secure secret
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false } // Set to true if using HTTPS
+    secret: 'abcdef',              // Secret for session encryption (replace with a secure secret in production)
+    resave: false,                 // Disable session resave if no changes are made
+    saveUninitialized: true,       // Save uninitialized sessions
+    cookie: { secure: false }      // Set to true if using HTTPS in production
 }));
 
 // Environment Variables
@@ -1189,7 +1190,7 @@ const youtubeClientId = process.env.YOUTUBE_CLIENT_ID;
 const youtubeClientSecret = process.env.YOUTUBE_CLIENT_SECRET;
 const youtubeRedirectUri = process.env.YOUTUBE_REDIRECT_URI;
 
-// Home Route
+// Home Route with Links to Login Pages for Spotify and YouTube
 app.get('/', (req, res) => {
     res.send(`
         <h1>Welcome to the Spotify and YouTube OAuth App</h1>
@@ -1198,22 +1199,23 @@ app.get('/', (req, res) => {
     `);
 });
 
-// Spotify Login
+// Spotify Login Route: Redirects to Spotify Authorization URL
 app.get('/spotify-login', (req, res) => {
-    const scope = 'playlist-read-private user-library-read';
+    const scope = 'playlist-read-private user-library-read'; // Permissions requested
     const url = `https://accounts.spotify.com/authorize?${querystring.stringify({
         client_id: clientId,
         response_type: 'code',
         redirect_uri: redirectUri,
         scope: scope
     })}`;
-    res.redirect(url);
+    res.redirect(url); // Redirect user to Spotify authorization URL
 });
 
-// Spotify Callback and Playlist Processing
+// Spotify Callback Route: Exchanges Authorization Code for Access Token and Fetches Playlists
 app.get('/spotify/callback', async (req, res) => {
-    const code = req.query.code;
+    const code = req.query.code; // Retrieve authorization code from query
     try {
+        // Exchange authorization code for access token
         const response = await axios.post('https://accounts.spotify.com/api/token', querystring.stringify({
             grant_type: 'authorization_code',
             code: code,
@@ -1222,34 +1224,33 @@ app.get('/spotify/callback', async (req, res) => {
             client_secret: clientSecret
         }), { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
 
-        const access_token = response.data.access_token;
+        const access_token = response.data.access_token; // Retrieve access token from response
 
-        // Function to fetch playlists with pagination
+        // Function to fetch all Spotify playlists with pagination
         async function fetchAllPlaylists() {
             let allPlaylists = [];
             let offset = 0;
-            let limit = 20;
+            let limit = 20; // Number of playlists per request
             let total;
 
             do {
+                // Request playlists in paginated chunks
                 const playlistsResponse = await axios.get(`https://api.spotify.com/v1/me/playlists?limit=${limit}&offset=${offset}`, {
                     headers: { Authorization: `Bearer ${access_token}` }
                 });
                 allPlaylists = allPlaylists.concat(playlistsResponse.data.items);
-                total = playlistsResponse.data.total;
+                total = playlistsResponse.data.total; // Total playlists count
                 offset += limit;
-            } while (offset < total);
+            } while (offset < total); // Continue until all playlists are fetched
 
             return allPlaylists;
         }
 
-        // Fetch all playlists
+        // Fetch all playlists and prepend "Liked Songs" as a virtual playlist
         const playlists = await fetchAllPlaylists();
-
-        // Fetch Liked Songs separately
         playlists.unshift({ name: "Liked Songs", id: "liked_songs" });
 
-        // Render playlists in a dropdown
+        // Render playlists in a dropdown form for selection
         res.send(`
             <h1>Select a Playlist</h1>
             <form action="/spotify/playlist" method="get">
@@ -1267,7 +1268,7 @@ app.get('/spotify/callback', async (req, res) => {
     }
 });
 
-// Spotify Playlist Songs Endpoint
+// Route to Fetch Songs from Selected Spotify Playlist or Liked Songs
 app.get('/spotify/playlist', async (req, res) => {
     const playlistId = req.query.playlistId;
     const access_token = req.query.access_token;
@@ -1276,20 +1277,20 @@ app.get('/spotify/playlist', async (req, res) => {
         let tracks;
 
         if (playlistId === "liked_songs") {
-            // Fetch Liked Songs if selected
+            // Fetch user's liked songs if selected
             const likedSongsResponse = await axios.get('https://api.spotify.com/v1/me/tracks', {
                 headers: { Authorization: `Bearer ${access_token}` }
             });
             tracks = likedSongsResponse.data.items.map(item => item.track.name);
         } else {
-            // Fetch tracks from the selected playlist
+            // Fetch songs from the specified playlist
             const tracksResponse = await axios.get(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
                 headers: { Authorization: `Bearer ${access_token}` }
             });
             tracks = tracksResponse.data.items.map(item => item.track.name);
         }
 
-        // Count song occurrences
+        // Count song occurrences and store in a Map
         const songFrequency = new Map();
         tracks.forEach(songName => {
             songFrequency.set(songName, (songFrequency.get(songName) || 0) + 1);
@@ -1344,7 +1345,7 @@ app.get('/spotify/playlist', async (req, res) => {
     }
 });
 
-// YouTube Login
+// YouTube Login and OAuth Flow
 app.get('/youtube-login', (req, res) => {
     const scope = 'https://www.googleapis.com/auth/youtube';
     const url = `https://accounts.google.com/o/oauth2/auth?${querystring.stringify({
@@ -1358,7 +1359,7 @@ app.get('/youtube-login', (req, res) => {
     res.redirect(url);
 });
 
-// YouTube Callback
+// YouTube Callback for Authorization Code Exchange
 app.get('/youtube/callback', async (req, res) => {
     const code = req.query.code;
     try {
@@ -1384,7 +1385,7 @@ app.get('/youtube/callback', async (req, res) => {
     }
 });
 
-// Transfer to YouTube Endpoint
+// Transfer Spotify Songs to YouTube Playlist
 app.post('/transfer-to-youtube', async (req, res) => {
     const sortedSongs = JSON.parse(req.body.sortedSongs);
     const youtubeAccessToken = req.session.youtubeAccessToken;
@@ -1454,10 +1455,60 @@ app.post('/transfer-to-youtube', async (req, res) => {
     }
 });
 
-
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
 
 
+
+
+
+
+// key components
+
+// 1. Setup and Dependencies
+// Express: Used to create the server and handle HTTP requests.
+// Axios: Simplifies making HTTP requests to APIs.
+// Body-Parser: Parses incoming request bodies, enabling JSON and URL-encoded data handling.
+// Querystring: Formats query strings for HTTP requests.
+// Session: Manages user sessions, which store data across different requests.
+// dotenv: Loads environment variables from a .env file for secure and configurable data storage.
+
+// 2. App Configuration
+// app: Creates an Express app instance.
+// PORT: Defines the port number (from environment variables or default to 3000).
+
+// 3. Middleware Setup
+// Body-parser: Parses incoming JSON and URL-encoded data for easy access in request handlers.
+// Session: Configures sessions with a secret for security and an unsecured cookie (recommended to secure in production).
+
+// 4. Environment Variables
+// Environment variables: Store sensitive information such as API credentials, ensuring they aren’t hardcoded into the codebase.
+
+// 5. Home Route
+// Home Route (/): Serves a simple HTML page with links for users to log into Spotify and YouTube.
+
+// 6. Spotify Login and Callback Routes
+// Spotify Login (/spotify-login): Redirects the user to Spotify's authorization URL, with permissions (scope) for accessing playlists and saved songs.
+// Spotify Callback (/spotify/callback): Handles Spotify’s response after login, exchanging an authorization code for an access token and then fetching user playlists.
+// fetchAllPlaylists(): Helper function that makes paginated requests to fetch all of a user’s playlists, including saved songs.
+
+// 7. Spotify Playlist Selection and Sorting
+// Fetch Liked or Playlist Songs (/spotify/playlist): Fetches either saved tracks or tracks from a specific playlist. Counts song occurrences and sorts songs by play count using quickSort for ordering by frequency.
+
+// 8. YouTube OAuth Flow
+// YouTube Login (/youtube-login): Redirects the user to YouTube’s OAuth authorization page with permissions to manage playlists.
+// YouTube Callback (/youtube/callback): After user consent, exchanges an authorization code for a YouTube access token, which is then stored in the session.
+
+// 9. Transfer Sorted Songs to YouTube
+// Transfer to YouTube (/transfer-to-youtube):
+// Creates a new YouTube playlist.
+// Searches for each sorted song on YouTube.
+// Adds each song (video) to the newly created YouTube playlist.
+
+// 10. Server Initialization
+// app.listen(): Starts the server and listens on the specified port, logging the URL to the console for easy access.
+
+
+// This configuration builds an app for transferring Spotify playlists to YouTube by authenticating users on both platforms and performing API operations to retrieve, sort, and transfer songs.
