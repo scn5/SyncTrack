@@ -1193,11 +1193,67 @@ const youtubeRedirectUri = process.env.YOUTUBE_REDIRECT_URI;
 // Home Route with Links to Login Pages for Spotify and YouTube
 app.get('/', (req, res) => {
     res.send(`
-        <h1>Welcome to the Spotify and YouTube OAuth App</h1>
-        <a href="/spotify-login">Login to Spotify</a><br>
-        <a href="/youtube-login">Login to YouTube Music</a>
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>OAuth Music Transfer App</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    background-color: #f4f4f4;
+                    color: #333;
+                    text-align: center;
+                    padding: 50px;
+                }
+                h1 {
+                    color: #1DB954; /* Spotify Green */
+                    margin-bottom: 20px;
+                }
+                a {
+                    display: inline-block;
+                    margin: 10px;
+                    padding: 15px 25px;
+                    font-size: 18px;
+                    color: white;
+                    background-color: #1DB954; /* Spotify Green */
+                    border-radius: 5px;
+                    text-decoration: none;
+                    transition: background-color 0.3s;
+                }
+                a:hover {
+                    background-color: #1ed760; /* Lighter green for hover effect */
+                }
+                .container {
+                    max-width: 600px;
+                    margin: auto;
+                    background: white;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+                    padding: 20px;
+                }
+                footer {
+                    margin-top: 20px;
+                    font-size: 14px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Music Playlist Transfer App</h1>
+                <p>Connect your Spotify and YouTube Music accounts to seamlessly transfer your playlists.</p>
+                <a href="/spotify-login">Login to Spotify</a>
+                <a href="/youtube-login">Login to YouTube Music</a>
+                <footer>
+                    <p>&copy; 2024 Music Transfer App. All rights reserved.</p>
+                </footer>
+            </div>
+        </body>
+        </html>
     `);
 });
+
 
 // Spotify Login Route: Redirects to Spotify Authorization URL
 app.get('/spotify-login', (req, res) => {
@@ -1251,7 +1307,66 @@ app.get('/spotify/callback', async (req, res) => {
         playlists.unshift({ name: "Liked Songs", id: "liked_songs" });
 
         // Render playlists in a dropdown form for selection
-        res.send(`
+// app.get('/spotify/callback', async (req, res) => {
+    res.send(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Select a Playlist</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    background: linear-gradient(135deg, #1f1f1f, #282828);
+                    color: #ffffff;
+                    text-align: center;
+                    padding: 50px;
+                }
+                h1 {
+                    margin-bottom: 20px;
+                }
+                form {
+                    background: rgba(255, 255, 255, 0.1);
+                    border-radius: 10px;
+                    padding: 20px;
+                    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+                    margin-bottom: 20px;
+                }
+                select {
+                    padding: 10px;
+                    border: none;
+                    border-radius: 5px;
+                    background: #444;
+                    color: white;
+                    font-size: 16px;
+                    margin: 10px 0;
+                }
+                button {
+                    padding: 10px 20px;
+                    font-size: 16px;
+                    color: white;
+                    background-color: #1DB954; /* Spotify Green */
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    transition: background-color 0.3s;
+                }
+                button:hover {
+                    background-color: #1ed760; /* Lighter green for hover effect */
+                }
+                a {
+                    color: #1DB954; /* Spotify Green */
+                    text-decoration: none;
+                    margin-top: 20px;
+                    display: inline-block;
+                }
+                a:hover {
+                    text-decoration: underline;
+                }
+            </style>
+        </head>
+        <body>
             <h1>Select a Playlist</h1>
             <form action="/spotify/playlist" method="get">
                 <input type="hidden" name="access_token" value="${access_token}">
@@ -1261,7 +1376,10 @@ app.get('/spotify/callback', async (req, res) => {
                 <button type="submit">View Playlist Songs</button>
             </form>
             <a href="/">Go Back</a>
-        `);
+        </body>
+        </html>
+    `);
+
     } catch (error) {
         console.error('Error exchanging code for Spotify token or fetching playlists:', error.response?.data || error.message);
         res.status(500).send("Error processing Spotify data");
