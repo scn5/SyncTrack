@@ -61,3 +61,26 @@ button {
 button:hover {
   background-color: #195beb;            /* Darker blue on hover */
 }
+
+
+/* 
+Key Components Explanation:
+Global Reset (*):
+
+Sets margin and padding to zero and applies box-sizing: border-box; to all elements to make layout and spacing consistent across elements.
+Body:
+
+Centers the entire content horizontally and vertically using flex properties.
+Sets a background gradient and applies a custom font and white text color.
+Container:
+
+Defines a centered box with padding, a semi-transparent black background, rounded corners, and a subtle shadow. This container holds the main content.
+Headings (h1 and h2):
+
+h1 and h2 elements control font sizes and margins, with a distinct font size for the main title (h1) and subheading (h2).
+Button:
+
+Each button spans 80% of the container width, has padding for spacing, and a vibrant blue background.
+Rounded corners, no border, and a cursor: pointer styling are added for aesthetics and UX.
+A smooth transition effect changes the button background on hover.
+This setup creates a centered, visually appealing interface with a modern gradient background, a shadowed container, and interactive buttons with hover effects. */
