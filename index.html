@@ -1,78 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Meta tags for character encoding and responsive viewport settings -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title> SyncTrack </title>
-  <link rel="icon" type="image/x-icon" href="logo .webp"> <!-- Favicon link -->
+  
+  <!-- Page Title -->
+  <title>SyncTrack</title>
+  
+  <!-- Favicon link to display an icon in the browser tab -->
+  <link rel="icon" type="image/x-icon" href="logo .webp">
 
   <style>
-    /* Base reset */
+    /* Basic CSS Reset */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
+    /* Set full height and width for body and html, with default font */
     body, html {
       width: 100%;
       height: 100%;
       font-family: Arial, sans-serif;
-      color: #ffffff;
+      color: #ffffff; /* White text color */
     }
 
+    /* Hero section styling with background image */
     .hero-section {
-      background-image: url('background.jpg'); 
-      background-size: cover;
-      background-position: center;
-      height: 100vh;
+      background-image: url('background.jpg'); /* Fullscreen background image */
+      background-size: cover; /* Ensures image covers the full area */
+      background-position: center; /* Center the background image */
+      height: 100vh; /* Full viewport height */
       display: flex;
-      align-items: center;
-      justify-content: center;
+      align-items: center; /* Centers content vertically */
+      justify-content: center; /* Centers content horizontally */
       text-align: center;
-      position: relative;
-      color: #fff;
+      position: relative; /* Allows the overlay to be positioned absolutely */
+      color: #fff; /* White text color */
     }
 
-    /* Overlay styling */
+    /* Semi-transparent overlay styling */
     .overlay {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.6); /* Dark overlay with 60% opacity */
     }
 
-    /* Content styling */
+    /* Content styling to position elements above the overlay */
     .content {
-      position: relative;
-      z-index: 1;
+      position: relative; /* Stacks above overlay */
+      z-index: 1; /* Ensures it is above overlay */
     }
 
-    .section{
+    /* Section container styling */
+    .section {
       height: 25px;
       align-content: center;
       text-align: center;
       align-items: center;
     }
 
-    .name{
+    /* SyncTrack name styling */
+    .name {
       text-align: center;
       border: #ddd;
-      border-radius:5px ;
+      border-radius: 5px;
       font-weight: bold;
       font-size: 28px;
       padding-left: 7px;
-      color: #31c6f3;
+      color: #31c6f3; /* Light blue text */
     }
 
-    /* logo styling */
+    /* Logo image styling */
     .logo {
-      max-width: 35px; 
+      max-width: 35px; /* Limits logo width */
       align-content: center;
     }
 
+    /* Main title styling */
     .title {
       margin-top: 0.4em;
       font-size: 3em;
@@ -80,41 +90,50 @@
       margin-bottom: 0.35em;
     }
 
+    /* Subtitle styling */
     .subtitle {
       font-size: 1.2em;
       margin-bottom: 1.4em;
     }
 
+    /* Button styling */
     .button {
       display: inline-block;
       padding: 10px 20px;
       font-size: 1em;
-      color: #07003e;
-      background-color: #fcf3f3;
-      text-decoration: none;
-      border-radius: 5px;
+      color: #07003e; /* Dark blue text color */
+      background-color: #fcf3f3; /* Light pink background */
+      text-decoration: none; /* Remove underline */
+      border-radius: 5px; /* Rounded corners */
       font-weight: bold;
     }
 
+    /* Button hover effect */
     .button:hover {
-      background-color: #ddddddcc;
+      background-color: #ddddddcc; /* Slightly darker on hover */
     }
-    </style>
+  </style>
 </head>
 <body>
 
     <!-- Hero Section with Overlay and Content -->
     <div class="hero-section">
+      <!-- Overlay for darkening the background image -->
       <div class="overlay"></div>
+      
+      <!-- Main content displayed above the overlay -->
       <div class="content">
+        <!-- Logo and app name section -->
         <div class="name_logo">
-          <img src="logo .webp" alt="Logo" class="section logo">
-          <a class="section name">SyncTrack</a>
+          <img src="logo .webp" alt="Logo" class="section logo"> <!-- Logo image -->
+          <a class="section name">SyncTrack</a> <!-- App name with styling -->
         </div>
-        <!-- Title and Subtitle -->
+
+        <!-- Title and Subtitle text -->
         <div class="title">Seamless Playlist Mastery</div>
         <div class="subtitle">Effortlessly Manage and Sync Your Music Across Platforms</div>
-        <!-- Transfer Button -->
+        
+        <!-- Button that links to the login page -->
         <a href="login.html" class="button">Get Started</a>
       </div>
     </div>
